@@ -21,12 +21,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-module com.github.idelstak {
-    requires javafx.controls;
-    requires javafx.fxml;
-    requires javafx.media;
-    requires javafx.swing;
-    requires org.apache.pdfbox;
-    opens com.github.idelstak.pdfviewer to javafx.fxml;
-    exports com.github.idelstak.pdfviewer;
+package com.github.idelstak.pdfviewer;
+
+public class FXMLLoadException extends RuntimeException {
+
+    public FXMLLoadException(String msg) {
+        super(msg);
+    }
+
+    public FXMLLoadException(String msg, Throwable t) {
+        super(msg, t);
+    }
+
 }

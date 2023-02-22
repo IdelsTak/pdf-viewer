@@ -21,12 +21,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-module com.github.idelstak {
-    requires javafx.controls;
-    requires javafx.fxml;
-    requires javafx.media;
-    requires javafx.swing;
-    requires org.apache.pdfbox;
-    opens com.github.idelstak.pdfviewer to javafx.fxml;
-    exports com.github.idelstak.pdfviewer;
+package com.github.idelstak.pdfviewer;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import javafx.scene.image.Image;
+
+public class ImagesMap {
+
+    private static final String IMAGE_DIR = "images/";
+
+    private static final Map<String, Image> IMAGE_MAP = new HashMap<>();
+
+    public static Image get(String key) {
+        Image image = IMAGE_MAP.get(key);
+        if (image == null) {
+            URL resource = ImagesMap.class.getResource(IMAGE_DIR + key);
+            try (InputStream is = resource.openStream()) {
+                IMAGE_MAP.put(key, new Image(is));
+            } catch (IOException e) {
+                String msg = "error loading image " + key;
+                throw new FXMLLoadException(msg, e);
+            }
+        }
+        return IMAGE_MAP.get(key);
+    }
+
 }

@@ -23,42 +23,59 @@
  */
 package com.github.idelstak.pdfviewer;
 
+import java.io.File;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import java.io.IOException;
+import javafx.event.ActionEvent;
+import javafx.scene.control.Button;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 
 public class MainApp extends Application {
-
-    private static Stage stage;
-
-    @Override
-    public void start(@SuppressWarnings("exports") Stage s) throws IOException {
-        stage = s;
-        setRoot("primary", "");
-    }
-
-    static void setRoot(String fxml) throws IOException {
-        setRoot(fxml, stage.getTitle());
-    }
-
-    static void setRoot(String fxml, String title) throws IOException {
-        Scene scene = new Scene(loadFXML(fxml));
-        stage.setTitle(title);
-        stage.setScene(scene);
-        stage.show();
-    }
-
-    private static Parent loadFXML(String fxml) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(MainApp.class.getResource("/fxml/" + fxml + ".fxml"));
-        return fxmlLoader.load();
-    }
 
     public static void main(String[] args) {
         launch(args);
     }
 
+    @Override
+    public void start(Stage stage) throws Exception {
+        stage.setTitle("PDF Viewer");
+        stage.setScene(mainScene(stage));
+        stage.show();
+    }
+
+    private static Scene mainScene(Stage stage) {
+        var mainPane = new BorderPane(openPdfButton(stage));
+        mainPane.setPrefSize(350, 150);
+
+        return new Scene(mainPane);
+    }
+
+    private static Button openPdfButton(Stage stage) {
+        var openButton = new Button("Open PDF file...");
+
+        openButton.setOnAction(event -> MainApp.openPdfFile(event, stage));
+
+        return openButton;
+    }
+
+    private static void openPdfFile(ActionEvent event, Stage stage) {
+        if (selectedPdf(stage) != null) {
+            new PDFViewer().showPDF(stage, selectedPdf(stage));
+        }
+
+        event.consume();
+    }
+
+    private static File selectedPdf(Stage stage) {
+        var fileChooser = new FileChooser();
+        
+        fileChooser.setTitle("Open PDF");
+        fileChooser.getExtensionFilters().addAll(new ExtensionFilter("PDF Files", "*.pdf"));
+        
+        return fileChooser.showOpenDialog(stage);
+    }
 }

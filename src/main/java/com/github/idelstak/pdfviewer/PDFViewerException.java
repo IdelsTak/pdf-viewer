@@ -21,12 +21,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-module com.github.idelstak {
-    requires javafx.controls;
-    requires javafx.fxml;
-    requires javafx.media;
-    requires javafx.swing;
-    requires org.apache.pdfbox;
-    opens com.github.idelstak.pdfviewer to javafx.fxml;
-    exports com.github.idelstak.pdfviewer;
+package com.github.idelstak.pdfviewer;
+
+public class PDFViewerException extends RuntimeException {
+
+    public PDFViewerException() {
+    }
+
+    public PDFViewerException(String message) {
+        super(message);
+    }
+
+    public PDFViewerException(Throwable cause) {
+        super(cause);
+    }
+
+    public PDFViewerException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public PDFViewerException(String message, Throwable cause, boolean enableSuppression,
+            boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
+    }
+
 }

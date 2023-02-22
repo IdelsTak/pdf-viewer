@@ -10,7 +10,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <mainClass>com.github.idelstak.pdfviewer.MainApp</mainClass>
+        <mainClass>com.github.idelstak.pdfviewer.Start</mainClass>
         <javafx-version>21-ea+5</javafx-version>
         <license.dir>${basedir}</license.dir>
     </properties>
@@ -26,28 +26,21 @@
             <artifactId>javafx-media</artifactId>
             <version>${javafx-version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-swing</artifactId>
+            <version>${javafx-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+            <version>2.0.27</version>
+        </dependency>
+
     </dependencies>
 
     <build>
         <plugins>
-            <!-- adds file to let you run program outside of IDE -->
-            <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <configuration>
-                            <tasks>
-                                <echo file="${project.build.directory}/runme.sh">jlink-image/bin/java -jar modules/${project.artifactId}-${project.version}.jar</echo>
-                            </tasks>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
             <!-- sets up the version of Java you are running -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -66,7 +59,6 @@
             </plugin>
 
             <!-- Adds license headers -->
-           
             <plugin>
                 <groupId>com.mycila</groupId>
                 <artifactId>license-maven-plugin</artifactId>
@@ -95,43 +87,12 @@
                 <configuration>
                     <archive>
                         <manifest>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>libs/</classpathPrefix>
                             <mainClass>${mainClass}</mainClass>
                         </manifest>
                     </archive>
-                    <outputDirectory>${project.build.directory}/modules</outputDirectory>
                 </configuration>
-            </plugin>
-
-            <!-- Makes the jLink setup so you can give it to your friends  -->
-            <plugin>
-                <groupId>org.moditect</groupId>
-                <artifactId>moditect-maven-plugin</artifactId>
-                <version>1.0.0.RC2</version>
-                <executions>
-                    <execution>
-                        <id>create-runtime-image</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>create-runtime-image</goal>
-                        </goals>
-                        <configuration>
-                            <modulePath>
-                                <path>${project.build.directory}/modules</path>
-                            </modulePath>
-                            <modules>
-                                <module>${project.groupId}</module>
-                            </modules>
-                            <launcher>
-                                <name>${project.groupId}</name>
-
-                            </launcher>
-                            <jarInclusionPolicy>APP_WITH_DEPENDENCIES</jarInclusionPolicy>
-                            <compression>2</compression>
-                            <stripDebug>true</stripDebug>
-                            <outputDirectory>${project.build.directory}/jlink-image</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
 
             <!-- Copies the depend FX files to your program  -->
@@ -146,8 +107,7 @@
                             <goal>copy-dependencies</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.build.directory}/modules</outputDirectory>
-                            <includeScope>runtime</includeScope>
+                            <outputDirectory>${project.build.directory}/libs</outputDirectory>
                         </configuration>
                     </execution>
                 </executions>
