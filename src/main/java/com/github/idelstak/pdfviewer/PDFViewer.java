@@ -24,11 +24,10 @@
 package com.github.idelstak.pdfviewer;
 
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -47,6 +46,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 
@@ -63,8 +63,11 @@ public class PDFViewer extends BorderPane {
     private int pageNum;
     private int pages;
     private byte[] pdf;
+    private final Window window;
 
-    public PDFViewer() {
+    public PDFViewer(Window window) {
+        this.window = window;
+        
         var borderStroke = new BorderStroke(
                 Color.BLACK,
                 BorderStrokeStyle.SOLID,
@@ -85,49 +88,57 @@ public class PDFViewer extends BorderPane {
     }
 
     public byte[] getPdf() {
-        return pdf;
+        return defensiveCopy(pdf);
     }
 
-    public void showPDF(Stage primaryStage, File selectedFile) {
-        showPDF(primaryStage, toByteArray(selectedFile));
+    public void showPDF(File selectedFile) {
+        showPDF(toByteArray(selectedFile));
     }
 
-    public void showPDF(Stage primaryStage, byte[] pdf) {
-        this.pdf = pdf;
+    public void showPDF(byte[] pdf) {
+        this.pdf = defensiveCopy(pdf);
+        
         try {
             document = PDDocument.load(pdf);
             pages = document.getPages().getCount();
+            
             if (pages == 1) {
-                initializeSinglePage(primaryStage);
+                initializeSinglePage();
             } else {
-                initializeMultiPage(primaryStage);
+                initializeMultiPage();
             }
+            
             pdfStage.show();
             pageNum = 0;
+            
             showPage();
         } catch (IOException e) {
             throw new PDFViewerException("Error rendering PDF", e);
         }
     }
 
-    private void initializeSinglePage(Stage primaryStage) {
-        Region parent = (Region) PDFViewer.this;
+    private static byte[] defensiveCopy(byte[] bytes) {
+        return Arrays.copyOf(bytes, bytes.length);
+    }
+
+    private void initializeSinglePage() {
+        Region parent = PDFViewer.this;
         parent.setPrefWidth(620);
         parent.setPrefHeight(920);
 
-        initializeScene(primaryStage);
+        initializeScene();
 
         this.setRight(null);
         this.setLeft(null);
         this.setTop(null);
     }
 
-    private void initializeMultiPage(Stage primaryStage) {
-        Region parent = (Region) PDFViewer.this;
+    private void initializeMultiPage() {
+        Region parent = PDFViewer.this;
         parent.setPrefWidth(737);
         parent.setPrefHeight(965);
 
-        initializeScene(primaryStage);
+        initializeScene();
 
         nextButton = new PagingButton("\u00BB");
         nextButton.setOnAction(e -> nextPage());
@@ -143,12 +154,12 @@ public class PDFViewer extends BorderPane {
         this.setTop(header);
     }
 
-    private void initializeScene(Stage primaryStage) {
+    private void initializeScene() {
         if (scene == null) {
             scene = new Scene(this);
             pdfStage = new Stage();
             pdfStage.initModality(Modality.APPLICATION_MODAL);
-            pdfStage.initOwner(primaryStage);
+            pdfStage.initOwner(window);
             pdfStage.setAlwaysOnTop(true);
             /*pdfStage.getIcons().add(ImagesMap.get("Citroen.png"));*/
             pdfStage.setScene(scene);
@@ -197,7 +208,7 @@ public class PDFViewer extends BorderPane {
 
     private static class PagingButton extends Button {
 
-        public PagingButton(String text) {
+        PagingButton(String text) {
             initialize(text);
         }
 

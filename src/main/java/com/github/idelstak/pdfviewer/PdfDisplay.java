@@ -23,38 +23,6 @@
  */
 package com.github.idelstak.pdfviewer;
 
-import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-import javafx.stage.Window;
-
-public class MainApp extends Application {
-
-    public static void main(String[] args) {
-        launch(args);
-    }
-
-    @Override
-    public void start(Stage stage) throws Exception {
-        stage.setTitle("PDF Viewer");
-        stage.setScene(pdfDisplayScene(stage));
-        stage.show();
-    }
-
-    private static Scene pdfDisplayScene(Window window) {
-        var pdfViewer = new PDFViewer(window);
-        var pdfFileChooser = new PdfFileChooser(window);
-        var pdfFileChoice = new PdfFileChoice(pdfViewer, pdfFileChooser);
-        
-        EventHandler<ActionEvent> openPdfFileEvent = new OpenPdfFileEvent(pdfFileChoice);
-        Node openPdfFileButton = new OpenPdfFileButton(openPdfFileEvent);
-        Parent pdfDisplayPane = new PdfDisplayPane(openPdfFileButton);
-
-        return new PdfDisplayScene(pdfDisplayPane);
-    }
+public class PdfDisplay {
 
 }

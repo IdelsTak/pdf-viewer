@@ -23,38 +23,27 @@
  */
 package com.github.idelstak.pdfviewer;
 
-import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
+import java.io.File;
+import javafx.stage.FileChooser;
 import javafx.stage.Window;
 
-public class MainApp extends Application {
+class PdfFileChooser {
 
-    public static void main(String[] args) {
-        launch(args);
-    }
+    private final Window window;
+    private final FileChooser fileChooser;
 
-    @Override
-    public void start(Stage stage) throws Exception {
-        stage.setTitle("PDF Viewer");
-        stage.setScene(pdfDisplayScene(stage));
-        stage.show();
-    }
-
-    private static Scene pdfDisplayScene(Window window) {
-        var pdfViewer = new PDFViewer(window);
-        var pdfFileChooser = new PdfFileChooser(window);
-        var pdfFileChoice = new PdfFileChoice(pdfViewer, pdfFileChooser);
+    PdfFileChooser(Window window) {
+        this.window = window;
         
-        EventHandler<ActionEvent> openPdfFileEvent = new OpenPdfFileEvent(pdfFileChoice);
-        Node openPdfFileButton = new OpenPdfFileButton(openPdfFileEvent);
-        Parent pdfDisplayPane = new PdfDisplayPane(openPdfFileButton);
+        fileChooser = new FileChooser();
+        var extensionFilter = new FileChooser.ExtensionFilter("PDF Files", "*.pdf");
+        
+        fileChooser.setTitle("Open PDF");        
+        fileChooser.getExtensionFilters().addAll(extensionFilter);
+    }
 
-        return new PdfDisplayScene(pdfDisplayPane);
+    File showOpenDialog() {
+        return fileChooser.showOpenDialog(window);
     }
 
 }

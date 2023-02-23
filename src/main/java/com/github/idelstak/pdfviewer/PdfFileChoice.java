@@ -23,38 +23,22 @@
  */
 package com.github.idelstak.pdfviewer;
 
-import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-import javafx.stage.Window;
+class PdfFileChoice {
 
-public class MainApp extends Application {
+    private final PDFViewer pdfViewer;
+    private final PdfFileChooser pdfFileChooser;
 
-    public static void main(String[] args) {
-        launch(args);
+    PdfFileChoice(PDFViewer pdfViewer, PdfFileChooser pdfFileChooser) {
+        this.pdfFileChooser = pdfFileChooser;
+        this.pdfViewer = pdfViewer;
     }
 
-    @Override
-    public void start(Stage stage) throws Exception {
-        stage.setTitle("PDF Viewer");
-        stage.setScene(pdfDisplayScene(stage));
-        stage.show();
-    }
+    void display() {
+        var selectedPdf = pdfFileChooser.showOpenDialog();
 
-    private static Scene pdfDisplayScene(Window window) {
-        var pdfViewer = new PDFViewer(window);
-        var pdfFileChooser = new PdfFileChooser(window);
-        var pdfFileChoice = new PdfFileChoice(pdfViewer, pdfFileChooser);
-        
-        EventHandler<ActionEvent> openPdfFileEvent = new OpenPdfFileEvent(pdfFileChoice);
-        Node openPdfFileButton = new OpenPdfFileButton(openPdfFileEvent);
-        Parent pdfDisplayPane = new PdfDisplayPane(openPdfFileButton);
-
-        return new PdfDisplayScene(pdfDisplayPane);
+        if (selectedPdf != null) {
+            pdfViewer.showPDF(selectedPdf);
+        }
     }
 
 }
